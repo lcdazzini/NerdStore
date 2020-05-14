@@ -33,7 +33,6 @@ namespace NerdStore.Catalogo.Domain
 			Guid categoriaId,
 			DateTime dataCadastro,
 			string imagem,
-			int quantidadeEstoque,
 			Dimensoes dimensoes)
 		{
 			Nome = nome;
