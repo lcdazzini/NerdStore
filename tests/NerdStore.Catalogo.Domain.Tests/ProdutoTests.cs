@@ -1,10 +1,11 @@
+using NerdStore.Catalogo.Domain.Entities;
 using NerdStore.Core.DomainObjects;
 using System;
 using Xunit;
 
 namespace NerdStore.Catalogo.Domain.Tests
 {
-	public class ProdutoTests
+    public class ProdutoTests
 	{
         [Fact]
         public void Produto_Validar_ValidacoesDevemRetornarExceptions()
