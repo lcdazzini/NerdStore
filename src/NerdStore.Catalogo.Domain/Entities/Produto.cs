@@ -25,6 +25,8 @@ namespace NerdStore.Catalogo.Domain.Entities
 
 		public Categoria Categoria { get; private set; }
 
+		protected Produto(){ }
+
 		public Produto(
 			string nome,
 			string descricao,
