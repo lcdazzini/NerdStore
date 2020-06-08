@@ -1,4 +1,6 @@
-﻿using System;
+﻿using NerdStore.Core.Messages;
+using System;
+using System.Collections.Generic;
 
 namespace NerdStore.Core.DomainObjects
 {
@@ -6,45 +8,69 @@ namespace NerdStore.Core.DomainObjects
 	{
 		public Guid Id { get; set; }
 
+		private List<Event> _notificacoes;
+		public IReadOnlyCollection<Event> Notificacoes => _notificacoes?.AsReadOnly();
+
 		protected Entity()
 		{
 			Id = Guid.NewGuid();
 		}
 
-		public override bool Equals(object obj)
-		{
-			var compareTo = obj as Entity;
+        public void AdicionarEvento(Event evento)
+        {
+            _notificacoes = _notificacoes ?? new List<Event>();
+            _notificacoes.Add(evento);
+        }
 
-			if (ReferenceEquals(this, compareTo)) return true;
-			if (ReferenceEquals(null, compareTo)) return false;
+        public void RemoverEvento(Event eventItem)
+        {
+            _notificacoes?.Remove(eventItem);
+        }
 
-			return Id.Equals(compareTo.Id);
-		}
+        public void LimparEventos()
+        {
+            _notificacoes?.Clear();
+        }
 
-		public static bool operator ==(Entity a, Entity b)
-		{
-			if (ReferenceEquals(a, null) && ReferenceEquals(b, null))
-				return true;
+        public override bool Equals(object obj)
+        {
+            var compareTo = obj as Entity;
 
-			if (ReferenceEquals(a, null) || ReferenceEquals(b, null))
-				return false;
+            if (ReferenceEquals(this, compareTo)) return true;
+            if (ReferenceEquals(null, compareTo)) return false;
 
-			return a.Equals(b);
-		}
+            return Id.Equals(compareTo.Id);
+        }
 
-		public static bool operator !=(Entity a, Entity b)
-		{
-			return !(a == b);
-		}
+        public static bool operator ==(Entity a, Entity b)
+        {
+            if (ReferenceEquals(a, null) && ReferenceEquals(b, null))
+                return true;
 
-		public override int GetHashCode()
-		{
-			return (GetType().GetHashCode() * 907) + Id.GetHashCode();
-		}
+            if (ReferenceEquals(a, null) || ReferenceEquals(b, null))
+                return false;
 
-		public override string ToString()
-		{
-			return $"{GetType().Name} [Id={Id}]";
-		}
-	}
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(Entity a, Entity b)
+        {
+            return !(a == b);
+        }
+
+        public override int GetHashCode()
+        {
+            return (GetType().GetHashCode() * 907) + Id.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return $"{GetType().Name} [Id={Id}]";
+        }
+
+        public virtual bool EhValido()
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
