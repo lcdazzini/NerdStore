@@ -1,26 +1,68 @@
 ﻿using MediatR;
 using NerdStore.Catalogo.Domain.Interfaces;
+using NerdStore.Core.Communication.Mediator;
+using NerdStore.Core.Messages.CommonMessages.IntegrationEvents;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace NerdStore.Catalogo.Domain.Events
 {
-	public class ProdutoEventHandler : INotificationHandler<ProdutoAbaixoEstoqueEvent>
+	public class ProdutoEventHandler : 
+		INotificationHandler<ProdutoAbaixoEstoqueEvent>,
+		INotificationHandler<PedidoIniciadoEvent>
 	{
 		private readonly IProdutoRepository _produtoRepository;
+		private readonly IEstoqueService _estoqueService;
+        private readonly IMediatorHandler _mediatorHandler;
 
-		public ProdutoEventHandler(IProdutoRepository produtoRepository)
-		{
-			_produtoRepository = produtoRepository;
-		}
+        public ProdutoEventHandler(
+            IProdutoRepository produtoRepository,
+            IEstoqueService estoqueService,
+            IMediatorHandler mediatorHandler)
+        {
+            _produtoRepository = produtoRepository;
+            _estoqueService = estoqueService;
+            _mediatorHandler = mediatorHandler;
+        }
 
-		public async Task Handle(ProdutoAbaixoEstoqueEvent notification, CancellationToken cancellationToken)
-		{
-			var produto = await _produtoRepository.ObterPorId(notification.AggregateId);
+        public async Task Handle(ProdutoAbaixoEstoqueEvent mensagem, CancellationToken cancellationToken)
+        {
+            var produto = await _produtoRepository.ObterPorId(mensagem.AggregateId);
 
-			// TODO: Enviar um e-mail para  aquisição de mais produtos.
+            // Enviar um email para aquisicao de mais produtos.
+        }
 
-			//return Task.CompletedTask;
-		}
-	}
+        public async Task Handle(PedidoIniciadoEvent message, CancellationToken cancellationToken)
+        {
+            var result = await _estoqueService.DebitarListaProdutosPedido(message.ListaProdutosPedido);
+
+            if (result)
+            {
+                await _mediatorHandler.PublicarEvento(
+                    new PedidoEstoqueConfirmadoEvent(
+                        message.PedidoId,
+                        message.ClienteId,
+                        message.Total,
+                        message.ListaProdutosPedido,
+                        message.NomeCartao,
+                        message.NumeroCartao,
+                        message.ExpiracaoCartao,
+                        message.CvvCartao
+                ));
+            }
+            else
+            {
+                await _mediatorHandler.PublicarEvento(
+                    new PedidoEstoqueRejeitadoEvent(
+                        message.PedidoId,
+                        message.ClienteId
+                ));
+            }
+        }
+
+        public async Task Handle(PedidoProcessamentoCanceladoEvent message, CancellationToken cancellationToken)
+        {
+            await _estoqueService.ReporListaProdutosPedido(message.ProdutosPedido);
+        }
+    }
 }

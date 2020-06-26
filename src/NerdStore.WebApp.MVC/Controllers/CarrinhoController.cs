@@ -4,6 +4,8 @@ using NerdStore.Catalogo.Application.IServices;
 using NerdStore.Core.Communication.Mediator;
 using NerdStore.Core.Messages.CommonMessages.Notifications;
 using NerdStore.Vendas.Application.Commands;
+using NerdStore.Vendas.Application.Queries.Interfaces;
+using NerdStore.Vendas.Application.Queries.ViewModels;
 using System;
 using System.Threading.Tasks;
 
@@ -12,14 +14,14 @@ namespace NerdStore.WebApp.MVC.Controllers
 	public class CarrinhoController : BaseController
     {
         private readonly IProdutoAppService _produtoAppService;
-        private readonly IPedidoQueries _pedidoQueries;
+        private readonly IPedidoQueriesService _pedidoQueries;
         private readonly IMediatorHandler _mediatorHandler;
 
         public CarrinhoController(
             INotificationHandler<DomainNotification> notifications,
             IProdutoAppService produtoAppService,
             IMediatorHandler mediatorHandler,
-            IPedidoQueries pedidoQueries) : base(notifications, mediatorHandler)
+            IPedidoQueriesService pedidoQueries) : base(notifications, mediatorHandler)
         {
             _produtoAppService = produtoAppService;
             _mediatorHandler = mediatorHandler;
@@ -120,8 +122,15 @@ namespace NerdStore.WebApp.MVC.Controllers
         {
             var carrinho = await _pedidoQueries.ObterCarrinhoCliente(ClienteId);
 
-            var command = new IniciarPedidoCommand(carrinho.PedidoId, ClienteId, carrinho.ValorTotal, carrinhoViewModel.Pagamento.NomeCartao,
-                carrinhoViewModel.Pagamento.NumeroCartao, carrinhoViewModel.Pagamento.ExpiracaoCartao, carrinhoViewModel.Pagamento.CvvCartao);
+            var command = new IniciarPedidoCommand(
+                carrinho.PedidoId, 
+                ClienteId, 
+                carrinho.ValorTotal, 
+                carrinhoViewModel.Pagamento.NomeCartao,
+                carrinhoViewModel.Pagamento.NumeroCartao, 
+                carrinhoViewModel.Pagamento.ExpiracaoCartao, 
+                carrinhoViewModel.Pagamento.CvvCartao
+            );
 
             await _mediatorHandler.EnviarComando(command);
 

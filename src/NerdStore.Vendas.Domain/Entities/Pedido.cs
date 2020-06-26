@@ -1,4 +1,5 @@
-﻿using NerdStore.Core.DomainObjects;
+﻿using FluentValidation.Results;
+using NerdStore.Core.DomainObjects;
 using NerdStore.Vendas.Domain.Enums;
 using System;
 using System.Collections.Generic;
@@ -41,17 +42,17 @@ namespace NerdStore.Vendas.Domain.Entities
             _pedidoItems = new List<PedidoItem>();
         }
 
-        public void AplicarVoucher(Voucher voucher)
+        public ValidationResult AplicarVoucher(Voucher voucher)
         {
-            //var validationResult = voucher.ValidarSeAplicavel();
-            //if (!validationResult.IsValid) return validationResult;
+			var validationResult = voucher.ValidarSeAplicavel();
+			if (!validationResult.IsValid) return validationResult;
 
-            Voucher = voucher;
+			Voucher = voucher;
             VoucherUtilizado = true;
             CalcularValorPedido();
 
-            //return validationResult;
-        }
+			return validationResult;
+		}
 
         public void CalcularValorPedido()
         {

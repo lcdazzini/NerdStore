@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NerdStore.Catalogo.Domain.Entities;
 using NerdStore.Core.Data;
+using NerdStore.Core.Messages;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,7 +23,9 @@ namespace NerdStore.Catalogo.Data.Context
 				e => e.GetProperties().Where(p => p.ClrType == typeof(string))))
 				property.SetColumnType("varchar(100)");
 
-			modelBuilder.ApplyConfigurationsFromAssembly(typeof(CatalogoContext).Assembly);
+            modelBuilder.Ignore<Event>();
+
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(CatalogoContext).Assembly);
 		}
 
         public async Task<bool> Commit()
