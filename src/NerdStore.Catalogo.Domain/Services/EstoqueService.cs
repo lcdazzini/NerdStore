@@ -97,15 +97,5 @@ namespace NerdStore.Catalogo.Domain.Services
         {
             _produtoRepository.Dispose();
         }
-
-		public Task<bool> DebitarListaProdutosPedido(ListaProdutosPedido lista)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Task<bool> ReporListaProdutosPedido(ListaProdutosPedido lista)
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

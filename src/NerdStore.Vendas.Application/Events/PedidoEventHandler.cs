@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using NerdStore.Core.Communication.Mediator;
 using NerdStore.Core.Messages.CommonMessages.IntegrationEvents;
+using NerdStore.Vendas.Application.Commands;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -42,6 +43,8 @@ namespace NerdStore.Vendas.Application.Events
 
         public async Task Handle(PedidoPagamentoRealizadoEvent message, CancellationToken cancellationToken)
         {
+            // lançar evento para criar nota fiscal e em seguida mandar e-mail com a mesma para o usuário
+
             await _mediatorHandler.EnviarComando(
                 new FinalizarPedidoCommand(
                     message.PedidoId, 

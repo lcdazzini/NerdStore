@@ -8,11 +8,13 @@ using NerdStore.Catalogo.Domain.Events;
 using NerdStore.Catalogo.Domain.Interfaces;
 using NerdStore.Catalogo.Domain.Services;
 using NerdStore.Core.Communication.Mediator;
+using NerdStore.Core.Data.EventSourcing;
 using NerdStore.Core.Messages.CommonMessages.IntegrationEvents;
 using NerdStore.Core.Messages.CommonMessages.Notifications;
 using NerdStore.Pagamentos.AntiCorruption.Facade;
 using NerdStore.Pagamentos.AntiCorruption.Interfaces;
 using NerdStore.Pagamentos.AntiCorruption.Services;
+using NerdStore.Pagamentos.Business.Events;
 using NerdStore.Pagamentos.Business.IServices;
 using NerdStore.Pagamentos.Business.Repository;
 using NerdStore.Pagamentos.Business.Services;
@@ -39,8 +41,8 @@ namespace NerdStore.WebApp.MVC.Setup
 			services.AddScoped<INotificationHandler<DomainNotification>, DomainNotificationHandler>();
 
 			// Event Sourcing
-			//services.AddSingleton<IEventStoreService, EventStoreService>();
-			//services.AddSingleton<IEventSourcingRepository, EventSourcingRepository>();
+			services.AddSingleton<EventSourcing.IEventStoreService, EventSourcing.EventStoreService>();
+			services.AddSingleton<IEventSourcingRepository, EventSourcingRepository>();
 
 			// Catalogo
 			services.AddScoped<IProdutoRepository, ProdutoRepository>();
@@ -58,7 +60,7 @@ namespace NerdStore.WebApp.MVC.Setup
 			services.AddScoped<VendaContext>();
 
 			services.AddScoped<IRequestHandler<AdicionarItemPedidoCommand, bool>, PedidoCommandHandler>();
-			//services.AddScoped<IRequestHandler<AtualizarItemPedidoCommand, bool>, PedidoCommandHandler>();
+			services.AddScoped<IRequestHandler<AtualizarItemPedidoCommand, bool>, PedidoCommandHandler>();
 			services.AddScoped<IRequestHandler<RemoverItemPedidoCommand, bool>, PedidoCommandHandler>();
 			services.AddScoped<IRequestHandler<AplicarVoucherPedidoCommand, bool>, PedidoCommandHandler>();
 			services.AddScoped<IRequestHandler<IniciarPedidoCommand, bool>, PedidoCommandHandler>();
